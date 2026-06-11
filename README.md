@@ -204,7 +204,7 @@ UI (ui.py) ← PyQt6 + QML ← Logo, Map, Chat, Menu, Grid
 - Map tiles: CartoDB Dark Matter
 
 ---
-
+## download : https://github.com/divn1erx/nexus-ai/releases/tag/untagged-7c62cdb9a7e01b53d7fa
 ## License
 
 Personal and non-commercial use only.
