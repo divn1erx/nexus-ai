@@ -1,215 +1,136 @@
-# -# NEXUS — MARK XXXIX
+# NEXUS — AI Desktop Interface
 
-### AI-Powered Desktop Assistant
+> **Originally: MARK XLVI (46)** by **FatihMakes** ([YouTube](https://youtube.com/@FatihMakes) · [GitHub](https://github.com/FatihMakes/Mark-XLVI))
+> This version is a heavily modified & expanded fork with a completely rewritten UI and additional features.
 
-NEXUS is a desktop AI assistant that combines **Claude Sonnet 4** for conversation with **17+ action tools** for full computer control. Voice, vision, files, browser, system settings, code — all through one dark cyberpunk UI.
-
-Built with PyQt6, animated with QML, powered by Anthropic + Google Gemini + OpenRouter.
-
----
-
-## Features
-
-### AI & Language
-- **Claude Sonnet 4** — primary conversation AI with tool-use loop
-- **OpenRouter fallback** — 22+ free models for memory extraction, search, vision
-- **Gemini 2.5 Flash** — file processing, planning, screen analysis
-- **Multi-language** — responds in your language, extracts parameters in English
-- **Persistent memory** — auto-extracts user facts (identity, preferences, projects) into structured JSON
-
-### Voice & Audio
-- Real-time mic input with voice activity detection (silence-gated)
-- Google Speech Recognition (STT) + pyttsx3 offline TTS
-- Selectable microphone device from Settings
-
-### Computer Control
-- Launch any app (45+ aliases, cross-platform)
-- Volume, brightness, WiFi, dark mode, restart/shutdown
-- PyAutoGUI mouse/keyboard automation
-- Window management (minimize, maximize, close, focus)
-- File CRUD, search, disk usage, desktop organization
-
-### Vision & Camera
-- Screen capture → Gemini Vision analysis (speaks results directly)
-- Webcam capture with selectable camera index
-- MediaPipe hand tracking (controls logo position via index finger)
-
-### Web & Browser
-- Playwright browser automation (navigate, search, click, type, fill forms)
-- Web search (OpenRouter + DuckDuckGo fallback)
-- YouTube (play, transcribe, summarize, trending)
-- Google Flights search with multi-language date parsing
-- Interactive OSM map (in-app tile rendering + browser Leaflet)
-
-### Developer Tools
-- Code assistant — write, edit, explain, run, build (auto-fix loop)
-- Dev agent — builds multi-file projects from scratch
-- Task planner — Gemini-powered, with retry/fix/replan error recovery
-- Priority task queue — background execution with status tracking
-
-### File Processing
-- Images — describe, OCR, resize, compress, convert
-- PDFs — summarize, extract text, convert to Word
-- Documents — summarize, fix grammar, reformat
-- Data — analyze, filter, sort, convert CSV/Excel/JSON
-- Code — explain, review, fix, run, document, test
-- Audio — transcribe, trim, convert
-- Video — trim, extract audio/frame, compress, transcribe
-- Archives — list, extract
-
-### UI
-- Dark cyberpunk PyQt6 interface (black background, blue-cyan accents)
-- **QML-animated logo** — pulsing rings, concentric rotations, scanning line (GPU-accelerated)
-- **Radial menu** — osu!-style circular menu (Settings, Audio, Maps, Cyber)
-- **Chat panel** — floating overlay with text I/O
-- **In-app map** — CartoDB Dark Matter tiles, drag-to-pan, zoom, markers
-- **Grid overlay** — blue-cyan grid at 25% opacity
-- **Settings** — CHAT MODE toggle, microphone/webcam selection
-- F1 fullscreen, click logo to open menu
+A dark, immersive desktop AI interface with voice control, camera integration, remote access, real‑time animations, and smart‑home‑grade interactivity.
 
 ---
 
-## Requirements
+## ⚡ Features
 
-| Item | Details |
-|---|---|
-| **OS** | Windows 10/11 (primary), macOS/Linux (partial) |
-| **Python** | 3.11+ |
-| **Mic** | Required for voice input |
-| **Webcam** | Optional — hand tracking & vision |
-| **API Keys** | Anthropic (hardcoded), Gemini (free), OpenRouter (free) |
+| Category | Feature |
+|----------|---------|
+| **Voice** | Always‑listening microphone (sounddevice + Google Speech Recognition) |
+| | "Hey Nexus" wake word (optional, toggle in Settings) |
+| | Adjustable mic sensitivity slider |
+| | Text‑to‑Speech (pyttsx3) |
+| **Camera** | 1‑frame snapshot (built‑in webcam or phone IP camera) |
+| | Touch anywhere to close |
+| | Motion detection toggle (F4) |
+| **UI / Animations** | Floating particle background |
+| | Firefly sparkle system |
+| | Scan‑line CRT overlay |
+| | Breathing glow (8 rings + radial gradient) |
+| | Ripple effect on Nexus click |
+| | Audio visualizer rings (pulse with speech) |
+| | Boot animation sequence |
+| **Chat** | Floating, draggable, resizable chat window |
+| | Logs all voice & text commands |
+| **Settings** | Slide‑in panel from right (OutCubic 280ms) |
+| | Mic sensitivity, camera, phone cam, wake word |
+| **Remote** | QR code + 6‑char session key (FastAPI backend) |
+| | Phone audio streaming via WebSocket |
+| | Encrypted commands (AES‑256‑CBC) |
+| **Productivity** | Screenshot capture (F3) |
+| | Timer / countdown (voice "timer 5 minutes") |
+| | Live weather display (wttr.in) |
+| | System tray (minimize to tray) |
+| **Window** | Full‑screen mode (F2) |
+| | Ctrl+Space to focus chat input |
+| | Ctrl+Q to quit |
 
-### Dependencies (main)
+---
+
+## ⌨️ Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `F2` | Toggle full‑screen window |
+| `F3` | Take a screenshot → saves to `~/Pictures/` |
+| `F4` | Toggle motion detection (opens camera) |
+| `F5` | Test Text‑to‑Speech |
+| `Ctrl+Space` | Focus chat input field |
+| `Ctrl+Q` | Quit application |
+| Settings ⚙ | Slide panel open/close |
+
+## 🎤 Voice Commands
+
+- "Camera" / "كاميرا" — take a snapshot
+- "Phone camera" / "كاميرا التلفون" — use phone IP camera
+- "Timer 5 minutes" / "مؤقت" — start countdown
+- "Weather" / "طقس" — refresh weather display
+- "Screenshot" / "تصوير" — capture screen
+- "Motion" / "حركة" — toggle motion detection
+- "Hello" / "مرحبا" — Nexus responds
+- Any other text → forwarded to `on_text_command` (Gemini, etc.)
+
+---
+
+## 🔧 Architecture
+
 ```
-PyQt6, anthropic, sounddevice, speechrecognition, pyttsx3,
-numpy, opencv-python, mediapipe, pillow, mss, requests,
-playwright, pyautogui, psutil, comtypes, pycaw
+main.py  ──→  JarvisUI  ──→  MainWindow
+                │                  ├── CenterGlow (face + glow + ripple)
+                │                  ├── ParticleBG (floating dots)
+                │                  ├── SparkleBG (fireflies)
+                │                  ├── ScanLines (CRT overlay)
+                │                  ├── AudioVis (pulsing rings)
+                │                  ├── CameraWidget (1‑frame snapshot)
+                │                  ├── FloatChat (draggable chat)
+                │                  ├── SettingsPanel (slide‑in)
+                │                  ├── RemoteOverlay (QR + key)
+                │                  └── BootOverlay (startup anim)
+                │
+                ├── VoiceListener (sounddevice + SR)
+                └── TTS (pyttsx3)
 ```
 
-Full list in `requirements.txt`.
+### Key integrations
+
+- **`main.py`** (`NexusCore`) → connects `on_text_command` & `on_remote_clicked`
+- **`dashboard/`** → FastAPI remote control server (port 8000)
+- **`1aedc0181c3685891f68f5ff9bff0dcf.png`** — face image (center)
+- **`8c0f4686d12229dea0cddd9a65aa5ca4.png`** — secondary image
 
 ---
 
-## Installation
+## 📁 File layout
 
-```powershell
-# 1. Clone
-git clone https://github.com/FatihMakes/Mark-XXXIX-OR.git
-cd Mark-XXXIX-OR
+```
+Mark-XLVI-main/
+├── main.py                  # Entry point, NexusCore integration
+├── ui.py                    # Full desktop UI (552 lines → rewritten)
+├── dashboard/
+│   ├── server.py            # FastAPI remote server
+│   ├── __init__.py
+│   └── static/
+│       ├── app.html         # Dashboard web page (mobile‑responsive)
+│       ├── login.html       # Login page (mobile‑responsive)
+│       └── crypto-js.min.js # AES‑256 client lib
+├── 1aedc0181c3685891f68f5ff9bff0dcf.png
+├── 8c0f4686d12229dea0cddd9a65aa5ca4.png
+└── README.md
+```
 
-# 2. Install dependencies
-pip install -r requirements.txt
-pip install anthropic speechrecognition pyttsx3 numpy
+---
 
-# 3. Install Playwright browsers
-playwright install
+## 🚀 Getting started
 
-# 4. Run
+```bash
+pip install PyQt6 opencv-python sounddevice SpeechRecognition numpy
+pip install requests qrcode[pil] pyttsx3
+pip install fastapi "uvicorn[standard]" cryptography python-multipart
+
 python main.py
 ```
 
-### First Run
-1. A setup overlay appears — enter your **Gemini API key** and **OpenRouter API key**
-2. Select your **OS** (auto-detected)
-3. NEXUS connects to Claude and shows "LISTENING" state
-4. Click the logo → radial menu → SETTINGS to configure mic/webcam
-
----
-
-## Build to EXE
-
-```powershell
-pip install pyinstaller
-pyinstaller --onefile --windowed --name "NEXUS" `
-  --add-data "actions;actions" --add-data "memory;memory" `
-  --add-data "agent;agent" --add-data "config;config" `
-  --add-data "core;core" --add-data "or_client.py;." `
-  --add-data "065ab163103b6a9242de51e365dd4c30.png;." `
-  --add-data "8c0f4686d12229dea0cddd9a65aa5ca4.png;." `
-  --add-data "nexus_logo.qml;." --add-data "nexus_map.html;." `
-  --add-data "cybersecurity_tools.txt;." `
-  --hidden-import "PyQt6.QtQuick" --hidden-import "PyQt6.QtQuickWidgets" `
-  --hidden-import "PyQt6.QtQml" --hidden-import "sounddevice" `
-  --hidden-import "numpy" --hidden-import "cv2" --hidden-import "mss" `
-  --hidden-import "PIL" --hidden-import "requests" `
-  --hidden-import "anthropic" --hidden-import "speech_recognition" `
-  --hidden-import "pyttsx3" --hidden-import "psutil" `
-  --hidden-import "comtypes" --hidden-import "pycaw" `
-  main.py
-```
-
-Output: `dist/NEXUS.exe`
-
----
-
-## API Keys
-
-| Provider | Where | Used For |
-|---|---|---|
-| Anthropic | `main.py` (hardcoded) | Primary AI (Claude Sonnet 4) |
-| Gemini | SetupOverlay → `config/api_keys.json` | File processing, vision, planning |
-| OpenRouter | SetupOverlay → `config/api_keys.json` | Memory extraction, web search fallback |
-
----
-
-## Project Structure
-
-```
-├── main.py                  # Entry point — AI loop, tools, hand tracking
-├── ui.py                    # PyQt6 UI — all widgets, menus, panels
-├── or_client.py             # OpenRouter API client (22+ free models)
-├── nexus_logo.qml           # QML animated logo
-├── nexus_map.html           # Leaflet fallback map
-├── actions/                 # 17 tool modules
-├── agent/                   # Planner, executor, task queue, error handler
-├── memory/                  # Long-term memory manager
-├── config/                  # API key storage
-├── core/prompt.txt          # AI system prompt
-└── *.png                    # Logo + bar assets
-```
-
----
-
-## Architecture
-
-```
-User Input (mic / text)
-       │
-       ▼
-  ┌─────────────┐     ┌──────────────┐
-  │  Claude API  │────▶│  Tool Executor │
-  │ (anthropic)  │◀────│  (main.py)    │
-  └─────────────┘     └──────┬───────┘
-                             │
-                    ┌────────┴────────┐
-                    │  17 Action Tools │
-                    │ (actions/*.py)   │
-                    └────────┬────────┘
-                             │
-                    ┌────────┴────────┐
-                    │  Gemini / OR    │
-                    │ (fallbacks)     │
-                    └─────────────────┘
-
-UI (ui.py) ← PyQt6 + QML ← Logo, Map, Chat, Menu, Grid
-```
+Open **Settings** → **Remote Control** to get the QR code and connect from your phone.
 
 ---
 
 ## Credits
 
-- **Original project** by [@FatihMakes](https://www.youtube.com/@FatihMakes)
-- **Modified & enhanced** by **div1ne_rx**
-- AI backend: Anthropic Claude, Google Gemini, OpenRouter
-- Map tiles: CartoDB Dark Matter
-
----
-## download : https://github.com/divn1erx/nexus-ai/releases/tag/untagged-7c62cdb9a7e01b53d7fa
-## License
-
-Personal and non-commercial use only.
-Licensed under **Creative Commons BY-NC 4.0**.
-
----
-
-> "NEXUS online. Always watching. Always ready."
+- **Original project — MARK XLVI:** [FatihMakes](https://github.com/FatihMakes/Mark-XLVI) ([YouTube](https://youtube.com/@FatihMakes) · [Instagram](https://instagram.com/fatihmakes))
+- **UI rewrite, animations, new features:** [div1ne_rx](discord.com/users/1405659284293029980)
+- **Icons & visual style:** Minimal dark theme with blue‑accent glow
